@@ -1,0 +1,24 @@
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+Time=0 | ALUCtrl=0000 | a=         0 | b=         0 | result=         0 | zero_flag=1
+Time=10000 | ALUCtrl=0000 | a=        10 | b=        20 | result=        30 | zero_flag=0
+Time=20000 | ALUCtrl=0000 | a=        10 (0x0000000a) | b=        20 (0x00000014) | result=        30 (0x00000001e) | zero_flag=0
+Time=20000 | ALUCtrl=0001 | a=        50 | b=        20 | result=        30 | zero_flag=0
+Time=30000 | ALUCtrl=0001 | a=        50 (0x00000032) | b=        20 (0x00000014) | result=        30 (0x00000001e) | zero_flag=0
+Time=30000 | ALUCtrl=0010 | a=     61680 | b=      4080 | result=       240 | zero_flag=0
+Time=40000 | ALUCtrl=0010 | a=     61680 (0x0000f0f0) | b=      4080 (0x00000ff0) | result=       240 (0x0000000f0) | zero_flag=0
+Time=40000 | ALUCtrl=0011 | a=     61680 | b=      4080 | result=     65520 | zero_flag=0
+Time=50000 | ALUCtrl=0011 | a=     61680 (0x0000f0f0) | b=      4080 (0x00000ff0) | result=     65520 (0x00000fff0) | zero_flag=0
+Time=50000 | ALUCtrl=0100 | a=     43690 | b=     21845 | result=     65535 | zero_flag=0
+Time=60000 | ALUCtrl=0100 | a=     43690 (0x0000aaaa) | b=     21845 (0x00005555) | result=     65535 (0x00000ffff) | zero_flag=0
+Time=60000 | ALUCtrl=0101 | a=     65535 | b=4294901760 | result=4294967296 | zero_flag=0
+Time=70000 | ALUCtrl=0101 | a=     65535 (0x0000ffff) | b=4294901760 (0xffff0000) | result=4294967296 (0x100000000) | zero_flag=0
+Time=70000 | ALUCtrl=0110 | a=         1 | b=         4 | result=        16 | zero_flag=0
+Time=80000 | ALUCtrl=0110 | a=         1 (0x00000001) | b=         4 (0x00000004) | result=        16 (0x000000010) | zero_flag=0
+Time=80000 | ALUCtrl=0111 | a=2147483648 | b=         4 | result= 134217728 | zero_flag=0
+Time=90000 | ALUCtrl=0111 | a=2147483648 (0x80000000) | b=         4 (0x00000004) | result= 134217728 (0x008000000) | zero_flag=0
+Time=90000 | ALUCtrl=1000 | a=4294967168 | b=         2 | result=2147483616 | zero_flag=0
+Time=100000 | ALUCtrl=1000 | a=4294967168 (0xffffff80) | b=         2 (0x00000002) | result=2147483616 (0x07fffffe0) | zero_flag=0
+Time=100000 | ALUCtrl=0001 | a=        10 | b=        10 | result=         0 | zero_flag=1
+Time=110000 | ALUCtrl=0001 | a=        10 (0x0000000a) | b=        10 (0x0000000a) | result=         0 (0x000000000) | zero_flag=1
+$finish called at time : 110 ns : File "C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_ALU.v" Line 78
