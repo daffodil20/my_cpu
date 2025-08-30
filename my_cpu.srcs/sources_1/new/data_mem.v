@@ -22,7 +22,7 @@
 
 module data_mem(
     input clk,
-    input [31:0] read_addr, write_addr, //读取和写入数据的地址
+    input [11:0] read_addr, write_addr, //读取和写入数据的地址
     input [31:0] write_data, //待写入的数据
     input DataWrite, DataRead, //写入控制信号
     output reg [31:0] read_data
@@ -30,7 +30,7 @@ module data_mem(
 
 reg [31:0] DM [0:1023];
 always @(posedge clk) begin //上升沿写入数据
-    if (DataWrite) begin
+    if (DataWrite) begin //DataWrite=1, DataRead=0时允许写入，反过来允许读取数据
         DM[write_addr] <= write_data;
     end else if (DataRead) begin
         read_data <= DM[read_addr];

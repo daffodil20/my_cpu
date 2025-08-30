@@ -21,15 +21,15 @@
 
 
 module RegDst_mux( //选择写入寄存器堆的地址
-    input [4:0] rd, rt, reg31,
-    input RegDst,
-    output reg [31:0] write_addr
+    input [4:0] rd, rt,
+    input [1:0] RegDst,
+    output reg [4:0] write_addr //32个通用寄存器对应32个写回地址
 );
 always @* begin
    case (RegDst)
        2'b00: write_addr <= rd; 
        2'b01: write_addr <= rt; 
-       2'b10: write_addr <= reg31;
+       2'b10: write_addr <= 5'b11111; //写回$31
        default: write_addr <= rd; //最好加个default
    endcase
 end

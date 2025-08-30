@@ -23,39 +23,39 @@
 module data_path(
     input clk, rst,
     // 输入控制信号
-    input         PCWrite, RegWrite, WriteData, //寄存器堆读写数据
-    input         MemRead, MemWrite, //内存读写
+    input PCWrite, RegWrite, //寄存器堆读写数据
+    input IRRead, ALUWrite,
+    input DataWrite, DataRead, DRWrite,//内存读写
     
-    input  [1:0]  PCSrc,
-    input         MemtoReg, RegDst,
+    input  [1:0]  PCSrcCtrl,
+    input  [1:0]  RegDst,
+    input  Mem2Reg, ExtCtrl,
     input  [1:0]  ALUSrcBCtrl,
     input  [3:0]  ALUCtrl,
 
     // 输出给控制单元
-    output [31:0] instruct, //输出当前指令
-    output zero
-    
+    output [31:0] instruct, pc_out, //输出当前指令和当前pc
+    output zero 
 );
 
-wire [31:0] pc_next_in, pc_out;
+wire [31:0] pc_next_in;
 //wire [4:0] read_addr1, read_addr2;
-wire [31:0] write_data;
+//wire [31:0] write_data;
 //wire [31:0] op1, op2; //ALU运算数
 wire [31:0] ALU_result;
 //wire ALUCtrl, zero;
 
-reg [15:0] in_data, out_data;
+reg [31:0] in_data, out_data;
 wire [31:0] branch_addr, jump_addr, pc_current, pc_adder, pc_plus_4; //pc多路选择器
 //wire [1:0] PCSrcCtrl, ALUSrcBCtrl;
 reg [31:0] pc_next;
 
  //实例化模块
-pc_acc PC_accumulator ( //pc寄存器，计算顺序执行时下一个pc
+PC_accumulator pc_acc( //pc寄存器，计算顺序执行时下一个pc
    .pc_current(pc_out),
    .pc_plus_4(pc_plus_4)
 );
 
- 
 PC pc( //pc寄存器，锁存pc
    .clk(clk),
    .PCWrite(PCWrite),
@@ -65,11 +65,9 @@ PC pc( //pc寄存器，锁存pc
 
 reg [4:0] rs;    // 源寄存器1
 
-
-
  //branch_addr = pc_plus_4 + 
  
-reg IRRead; //读取指令的控制信号
+//reg IRRead; //读取指令的控制信号
 //reg [31:0] instruct; //待拆分的32位指令，指令拆分后会进入主控制器
 reg [5:0] opcode;  // 操作码
 
@@ -82,7 +80,15 @@ reg [25:0] addr;    // 跳转地址（J 型）
 reg [4:0] read_addr1;    // 源寄存器1
 reg [4:0] read_addr2;
 
+instruct_mem IM( //实例化指令存储器
+   .instruct_addr(pc_out),
+   .instruct_data(instruct)
+);
+
 instruct_reg IR( //IR分解指令为本不同字段
+   .clk(clk),
+   .rst(rst),
+   .IRRead(IRRead),
    .instruct(instruct),
    .opcode(opcode),
    .rs(rs),
@@ -95,28 +101,26 @@ instruct_reg IR( //IR分解指令为本不同字段
 );
 
 
-
-
-reg ExCtrl;
+//reg ExCtrl;
 wire [31:0] op1, op2, read_data1, read_data2;
 
 //imm字段符号或0扩展
 ext_unit ext_unit(
     .in_data(imm),
-    .ExCtrl(ExCtrl),
+    .ExtCtrl(ExtCtrl),
     .out_data(out_data)
 );
 //wire [31:0] branch_addr, jump_addr; //分支和跳转目标地址
 
-assign branch_addr = pc_plus_4 + out_data << 2; //beq,bne指令
-assign jump_addr = {pc_plus_4[31:28], instruct[25:0], 2'b00}; //jal,j指令
+assign branch_addr = pc_plus_4 + (out_data << 2); //beq,bne指令
+assign jump_addr = {pc_plus_4[31:28], addr, 2'b00}; //jal,j指令
 
 PCSrc_mux pcSrc_mux (
     .pc_plus_4(pc_plus_4),
     .branch_addr(branch_addr),
     .jump_addr(jump_addr),
-    .rs(rs),
-    .PCSrcCtrl(PCSrc), //控制单元发出的控制信号列输入到mux，成为PCSrcCtrl
+    .rs(op1),
+    .PCSrcCtrl(PCSrcCtrl), //控制单元发出的控制信号列输入到mux，成为PCSrcCtrl
     .pc_next(pc_next) //输出下一个pc，送回pc寄存器
  );
 
@@ -183,28 +187,32 @@ always @* begin
                 end
             endcase*/
         end
-        default: begin // I型
+        default: begin // I型，包括beq,bne
             read_addr1 = rs;
             read_addr2 = rt; // 寄存器堆依然读 rt，输出可能不用
         end
     endcase
 end
    
-
+wire [31:0] data_wb; //待写回寄存器的数据，来自ALU或DM。即内存
+wire [4:0] write_addr;
 //assign read_addr2 = rt;
 register_file reg_file (
         .clk(clk),
         .rst(rst),
         .read_addr1(read_addr1),
         .read_addr2(read_addr2),
+        .write_addr(write_addr),
+        .write_data(data_wb),
         .RegWrite(RegWrite),
         .read_data1(read_data1),
-        .read_data2(read_data2),       
-        .write_data(write_data)
+        .read_data2(read_data2)       
+         //Mem2Reg_mux的输出连到这里
 );
 
 
 // 临时寄存器存储读取的数据，然后进入mux选择
+wire [31:0] regB_val;
 tmp_reg reg_A(
      .clk(clk),
      .rst(rst),
@@ -216,12 +224,12 @@ tmp_reg reg_B(
      .clk(clk),
      .rst(rst),
      .in_data(read_data2),
-     .out_data(op2)
+     .out_data(regB_val)
 );
 
 //实例化多路选择器
 ALUSrcB_mux alu_srcb_mux(
-    .regB(read_data2),         // 临时寄存器B输出
+    .regB(regB_val),         // 临时寄存器B输出
     .shamt(shamt),
     .ext_data(out_data), // 扩展后的立即数
     .ALUSrcBCtrl(ALUSrcBCtrl),
@@ -235,6 +243,57 @@ ALU alu(
     .ALUCtrl(ALUCtrl),
     .result(ALU_result),
     .zero(zero)
+);
+
+wire [31:0] ALUOut;
+ALUOut aluOut(
+    .ALUResult(ALU_result),
+    .ALUWrite(ALUWrite),
+    .ALUOut(ALUOut)
+);
+
+
+wire [31:0] read_data_addr, write_data_addr; //读取和写入数据的地址
+wire [31:0] write_data;
+reg [31:0] read_data;
+//wire [31:0] DataWrite, DataRead;
+//reg [31:0] read_data_addr, write_data_addr;
+//数据存储器DM
+data_mem DM(
+    .clk(clk),
+    .read_addr(ALUOut), //读数据地址
+    .write_addr(ALUOut), //写数据地址，即ALUOut
+    .write_data(read_data2), //写入内存的数据，即rt内容，read_data2
+    .read_data(read_data), 
+    .DataWrite(DataWrite), //读取和写入控制信号
+    .DataRead(DataRead)
+);
+//wire Mem2Reg; //控制信号
+
+
+Mem2Reg_mux mem2reg_mux( //写回的数据来自ALU还是内存
+    .ALUOut(ALUOut),
+    .MDR_data(write_data),
+    .Mem2Reg(Mem2Reg),
+    .write_data(data_wb)
+);
+
+data_reg DR(
+    .clk(clk),
+    .rst(rst),
+    .DRWrite(DRWrite),
+    .in_data(read_data), //从内存加载的数据
+    .out_data(write_data) //输入到mux
+);
+
+//case (opcode)
+   // 6b'100011: write_addr = read_addr2; //写入rt
+        
+RegDst_mux RegDst_mux(  //选择写入寄存器堆的地址
+    .rd(rd),
+    .rt(rt),
+    .RegDst(RegDst),
+    .write_addr(write_addr) //写入内存的数据的地址，即rt
 );
 
 

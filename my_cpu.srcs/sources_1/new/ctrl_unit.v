@@ -483,7 +483,7 @@ module ctrl_unit #(
      parameter      S16_PC_JAL = 5'd16 //jalgengxin PC
 ) (input clk, rst,
      input [4:0] opcode, func,
-     output reg IMRead, IRWrite, PCWrite, RegWrite, DataRead, DataWrite, ALUWrite, Mem2Reg, ExtCtrl, zero, DRWrite, IRWrite,
+     output reg IMRead, IRRead, PCWrite, RegWrite, DataRead, DataWrite, ALUWrite, Mem2Reg, ExtCtrl, zero, DRWrite, IRWrite,
      output reg [1:0] PCSrcCtrl, ALUSrcBCtrl, RegDst,
      output reg [3:0] ALUCtrl
 );     
