@@ -18,7 +18,7 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-module tb_clk_gen;
+/*module tb_clk_gen;
     // 输入信号
     reg clk;
     reg rst;
@@ -62,4 +62,25 @@ module tb_clk_gen;
         $stop;
     end
 
+endmodule*/
+
+module tb_clk_gen;
+
+    // 声明被测试模块的信号
+    wire clk;
+    
+    // 实例化 clk_gen 模块
+    clk_gen clk_gen (
+        .clk(clk)
+    );
+
+    // 仿真控制
+    initial begin
+
+        // 仿真运行 200ns 后结束
+        #200;
+        $finish;
+    end
+
 endmodule
+

@@ -23,7 +23,7 @@
 module data_path(
     input clk, rst,
     // 输入控制信号
-    input PCWrite, RegWrite, //寄存器堆读写数据
+    input PCWrite, RegWrite, pc_acc_en,//寄存器堆读写数据
     input IRRead, ALUWrite,
     input DataWrite, DataRead, DRWrite,//内存读写
     
@@ -35,48 +35,55 @@ module data_path(
 
     // 输出给控制单元
     output [31:0] instruct, pc_out, //输出当前指令和当前pc
-    output zero 
+    output zero,
+    output [5:0] opcode, func, //因为控制单元需要指令字段信息
+    output [31:0] reg1_val, reg2_val, reg3_val, //探测通用寄存器的内容
+    output [31:0] ALU_result,
+    output [31:0] op1, op2, ALUOut, read_data2, write_data,
+    output [25:0] addr
 );
 
 wire [31:0] pc_next_in;
 //wire [4:0] read_addr1, read_addr2;
 //wire [31:0] write_data;
 //wire [31:0] op1, op2; //ALU运算数
-wire [31:0] ALU_result;
+//wire [31:0] ALU_result;
 //wire ALUCtrl, zero;
 
-reg [31:0] in_data, out_data;
+wire [31:0] in_data, out_data;
 wire [31:0] branch_addr, jump_addr, pc_current, pc_adder, pc_plus_4; //pc多路选择器
 //wire [1:0] PCSrcCtrl, ALUSrcBCtrl;
-reg [31:0] pc_next;
+wire [31:0] pc_next;
 
  //实例化模块
 PC_accumulator pc_acc( //pc寄存器，计算顺序执行时下一个pc
    .pc_current(pc_out),
+   .pc_acc_en(pc_acc_en),
    .pc_plus_4(pc_plus_4)
+   
 );
 
 PC pc( //pc寄存器，锁存pc
    .clk(clk),
+   .rst(rst),
    .PCWrite(PCWrite),
    .pc_next_in(pc_next),
    .pc_out(pc_out)
 );
 
-reg [4:0] rs;    // 源寄存器1
+wire [4:0] rs;    // 源寄存器1
 
  //branch_addr = pc_plus_4 + 
  
 //reg IRRead; //读取指令的控制信号
 //reg [31:0] instruct; //待拆分的32位指令，指令拆分后会进入主控制器
-reg [5:0] opcode;  // 操作码
-
-reg [4:0] rt;      // 源寄存器2 / 目的寄存器
-reg [4:0] rd;     // 目的寄存器（R 型）
-reg [4:0] shamt;  // 移位量
-reg [5:0] func;   // 功能码（R 型）
-reg [15:0] imm;    // 立即数（I 型）
-reg [25:0] addr;    // 跳转地址（J 型） 
+//wire [5:0] opcode;  // 操作码
+wire [4:0] rt;      // 源寄存器2 / 目的寄存器
+wire [4:0] rd;     // 目的寄存器（R 型）
+wire [4:0] shamt;  // 移位量
+//wire [5:0] func;   // 功能码（R 型）
+wire [15:0] imm;    // 立即数（I 型）
+//wire [25:0] addr;    // 跳转地址（J 型） 
 reg [4:0] read_addr1;    // 源寄存器1
 reg [4:0] read_addr2;
 
@@ -102,7 +109,8 @@ instruct_reg IR( //IR分解指令为本不同字段
 
 
 //reg ExCtrl;
-wire [31:0] op1, op2, read_data1, read_data2;
+//wire [31:0] op1, op2, read_data1, read_data2;
+wire [31:0] read_data1;
 
 //imm字段符号或0扩展
 ext_unit ext_unit(
@@ -196,6 +204,7 @@ end
    
 wire [31:0] data_wb; //待写回寄存器的数据，来自ALU或DM。即内存
 wire [4:0] write_addr;
+
 //assign read_addr2 = rt;
 register_file reg_file (
         .clk(clk),
@@ -206,7 +215,10 @@ register_file reg_file (
         .write_data(data_wb),
         .RegWrite(RegWrite),
         .read_data1(read_data1),
-        .read_data2(read_data2)       
+        .read_data2(read_data2),
+        .reg1_val(reg1_val),
+        .reg2_val(reg2_val), 
+        .reg3_val(reg3_val)       
          //Mem2Reg_mux的输出连到这里
 );
 
@@ -242,20 +254,35 @@ ALU alu(
     .b(op2),
     .ALUCtrl(ALUCtrl),
     .result(ALU_result),
-    .zero(zero)
+    .zero_flag(zero)
 );
 
-wire [31:0] ALUOut;
-ALUOut aluOut(
-    .ALUResult(ALU_result),
+wire [31:0] alu_result_final;
+wire [31:0] lui_result;
+//wire [31:0] ALUOut; //由模块驱动，用wire
+
+assign lui_result = {imm, 16'b0}; //临时存储lui结果
+assign alu_result_final = (opcode == 6'b001111) ? lui_result : ALU_result; //是否是lui
+
+ALUOut aluOut( 
+    .ALUResult(alu_result_final), //锁存最终结果
+    .clk(clk),
+    .rst(rst),
     .ALUWrite(ALUWrite),
     .ALUOut(ALUOut)
 );
-
+//lui指令 特殊处理
+//wire [31:0] lui_addr; 
+//assign lui_addr = {imm, 16'b0};
+/*ways @* begin
+    if (opcode == 6'b001111) begin
+        ALUOut = {imm, 16'b0};
+    end   
+end*/
 
 wire [31:0] read_data_addr, write_data_addr; //读取和写入数据的地址
-wire [31:0] write_data;
-reg [31:0] read_data;
+//wire [31:0] write_data;
+wire [31:0] read_data;
 //wire [31:0] DataWrite, DataRead;
 //reg [31:0] read_data_addr, write_data_addr;
 //数据存储器DM
@@ -270,6 +297,21 @@ data_mem DM(
 );
 //wire Mem2Reg; //控制信号
 
+//slt,sltu(R
+/*if (opcode = 6'b000000 && (func = 6'b101010 || func = 6'b101011) && ALUOut < 0) begin
+    ALUOut = 1; //写回寄存器的是1
+end
+if (opcode = 6'b000000 && (func = 6'b101010 || func = 6'b101011) && ALUOut >= 0) begin
+    ALUOut = 0; //写回寄存器的是0
+end
+
+//slti,sltiu(I)
+if (opcode == 6'b001010 && ALUOut < 0) begin
+    assign ALUOut = 1; //写回寄存器的是1
+end
+if (opcode = 6'b001011 && ALUOut >= 0) begin
+    ALUOut = 0; //写回寄存器的是1
+end*/
 
 Mem2Reg_mux mem2reg_mux( //写回的数据来自ALU还是内存
     .ALUOut(ALUOut),
@@ -285,6 +327,9 @@ data_reg DR(
     .in_data(read_data), //从内存加载的数据
     .out_data(write_data) //输入到mux
 );
+
+
+
 
 //case (opcode)
    // 6b'100011: write_addr = read_addr2; //写入rt

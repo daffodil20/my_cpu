@@ -107,7 +107,7 @@ endmodule*/
 //   fetch:     Signal active during instruction fetch phase (cycles 1-4).
 //   DM_ena:    Signal active during data memory access phase (cycles 7-8).
 //********************************************************************************
-module clk_gen (
+/*module clk_gen (
     input wire clk,
     input wire rst,
     output reg fetch,
@@ -148,6 +148,23 @@ module clk_gen (
         end
     end
 
+endmodule*/
+
+
+`timescale 1ns / 1ps
+
+module clk_gen(
+    output reg clk
+);
+
+initial begin
+    clk = 0;
+end
+
+// 每 10ns 翻转一次，得到 20ns 一个周期，即 50MHz
+always #10 clk = ~clk;
+
 endmodule
+
 
 

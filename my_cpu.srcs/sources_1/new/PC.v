@@ -23,6 +23,7 @@
 module PC(
      input wire clk, rst,
      input wire PCWrite, //Ð´PCµÄ¿ØÖÆÐÅºÅ
+     input wire [4:0] state, 
      input wire [31:0] pc_next_in,
      output wire [31:0] pc_out
 );

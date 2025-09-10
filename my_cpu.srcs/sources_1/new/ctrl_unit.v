@@ -480,10 +480,15 @@ module ctrl_unit #(
      //parameter      S15_EX_JAL = 5'd15, //jal执行
      parameter      S14_WB_JAL = 5'd14, //jal写回$31
      parameter      S15_EX_JR = 5'd15, //jr指令执行
-     parameter      S16_PC_JAL = 5'd16 //jalgengxin PC
+     parameter      S16_PC_JAL = 5'd16, //jalgengxin PC
+     parameter S17_WB_R2 = 5'd17, //R型写回第二个时钟周期
+     parameter S18_EX_LW = 5'd18, // lw地址计算
+     parameter S19_EX_SW = 5'd19 // sw地址计算
+     //parameter S20_PC_J = 5'd20 //j指令更新pc
 ) (input clk, rst,
-     input [4:0] opcode, func,
-     output reg IMRead, IRRead, PCWrite, RegWrite, DataRead, DataWrite, ALUWrite, Mem2Reg, ExtCtrl, zero, DRWrite, IRWrite,
+     input [5:0] opcode, func,
+     input zero, //data_path的输出连到这里
+     output reg IMRead, IRRead, PCWrite, pc_acc_en, RegWrite, DataRead, DataWrite, ALUWrite, Mem2Reg, ExtCtrl, DRWrite, //连接到data_path输入作为控制信号
      output reg [1:0] PCSrcCtrl, ALUSrcBCtrl, RegDst,
      output reg [3:0] ALUCtrl
 );     
@@ -499,14 +504,23 @@ end
 
 //根据state和opcode/func决定next_state
 always @(*) begin
-    IMRead    = 0; //控制信号重置
+    /*IMRead    = 0; //控制信号重置
     IRWrite   = 0;
     PCWrite   = 0;
     RegWrite  = 0;
     DataRead  = 0;
     DataWrite = 0;
     ALUWrite  = 0;
-    Mem2Reg = 0; ExtCtrl, zero
+    Mem2Reg = 0; 
+    ExtCtrl = 0;
+    zero = 0;
+    DRWrite = 0;
+    IRWrite = 0;
+    PCSrcCtrl = 2'b00;
+    ALUSrcBCtrl = 2'b00;
+    RegDst = 2'b00;
+    ALUCtrl = 4'b0000;*/
+    
     case (state)
         //S0_IF0:  next_state = S1_IF1;
         S1_IF_ID1:  next_state = S2_IF2;
@@ -526,9 +540,11 @@ always @(*) begin
                 
                 //6'b100011: next_state = S9_EX_LS, //lw执行
                 //6'b101011: next_state = S9_EX_LS, //sw执行
-                6'b100011, //lw
-                6'b101011, //sw
-                6'b001000, //多个I型运算指令执行，包括lw,sw，不包括bne,beq
+                /*6'b100011, //lw
+                6'b101011, //sw*/
+                
+                //多个I型运算指令执行，不包括lw,sw，不包括bne,beq
+                6'b001000, //adii,addiu
                 6'b001001,
                 6'b001100,
                 6'b001101,
@@ -536,6 +552,11 @@ always @(*) begin
                 6'b001010,
                 6'b001011: 
                     next_state = S6_EX_I_ALU;
+                    
+                6'b100011: //lw
+                    next_state = S18_EX_LW; 
+                6'b101011: //sw 
+                    next_state = S19_EX_SW;
                 
                 6'b000100,
                 6'b000101:
@@ -550,7 +571,7 @@ always @(*) begin
          end
          
          S4_EX_R: next_state = S5_WB_R; //R型指令写回rd
-         S5_WB_R: next_state = S1_IF_ID1;
+         S5_WB_R: next_state = S17_WB_R2;
          
          S6_EX_I_ALU: begin //I型运算执行，不包括bne,beq
              if (opcode == 6'b100011) begin
@@ -560,7 +581,7 @@ always @(*) begin
                  next_state = S11_LS_SW; //sw访存第一个时钟周期
                  //next_state = S0_IF0; 
              end else begin
-                 next_state = S1_IF_ID1; //其他I型运算指令回到取指
+                 next_state = S7_WB_I_ALU; //其他I型运算指令写回reg
              end
          end        
          //next_state = S8_WB_I_ALU;
@@ -588,25 +609,52 @@ always @(*) begin
          //S12_WB_LW: next_state = S0_IF0;
          //S13_LS_SW: next_state = S0_IF0;
          S12_EX_BR: begin
-             case (zero)
-                 1'b1: next_state = S16_PC_JAL;
-                 1'b0: next_state = S1_IF_ID1;
+             case(opcode)
+                 6'b000100: next_state = (zero == 1) ? S16_PC_JAL: S1_IF_ID1; //beq下一步
+                 6'b000101: next_state = (zero == 0) ? S16_PC_JAL: S1_IF_ID1; //bne下一步
+             /*case (zero)
+                 1'b1: next_state = S16_PC_JAL; //跳转到目标地址
+                 1'b0: next_state = S1_IF_ID1; //不跳转，返回取指*/
              endcase
          end
          //next_state = S1_IF_ID1;    //分支执行后回到取指状态
+         
          S13_EX_JAL_J: next_state = S1_IF_ID1;
+         
+         //S13_EX_JAL_J: next_state = S20_PC_J;
+         
          //S16_EX_JAL: next_state = S18_WB_JAL; //jal写回$31
          
          S14_WB_JAL: next_state = S1_IF_ID1; 
          S15_EX_JR: next_state = S1_IF_ID1; 
          S16_PC_JAL: next_state = S1_IF_ID1; 
+         S17_WB_R2: next_state = S1_IF_ID1; //R型写回后再取指
+         S18_EX_LW: next_state = S8_LS_LW; //lw
+         S19_EX_SW: next_state = S11_LS_SW; //sw
+         //S20_PC_J: next_state = S1_IF_ID1; 
           
          default: next_state = S1_IF_ID1;
    endcase
 end
  
 //生成控制信号
-always @(*) begin
+always @(posedge clk) begin
+    IMRead    = 0; //控制信号重置，防止被污染
+    IRRead   = 0;
+    PCWrite   = 0;
+    pc_acc_en = 0;
+    RegWrite  = 0;
+    DataRead  = 0;
+    DataWrite = 0;
+    ALUWrite  = 0;
+    Mem2Reg = 0; 
+    ExtCtrl = 0;
+    //zero = 0;
+    DRWrite = 0;
+    PCSrcCtrl = 2'b00;
+    ALUSrcBCtrl = 2'b00;
+    RegDst = 2'b00;
+    ALUCtrl = 4'b0000;
     case (state)
         /*S0_IF0: begin
             IMRead = 1; //从IM读取指令
@@ -614,13 +662,25 @@ always @(*) begin
         //end
         S1_IF_ID1: begin
             //IMRead = 1; //
-            IRWrite = 1'b1; //从IM读取指令存入IR，同步输出多个字段（译码），
+            //IRWrite = 1'b1; //从IM读取指令存入IR，同步输出多个字段（译码），
+            IRRead = 1'b1;
+            PCWrite   = 0;
+            pc_acc_en = 0;
+            
         end
         S2_IF2: begin   
             //IMRead = 0; //
-            IRWrite = 0;
-            PCWrite = 1; //PC自增
+            if (opcode == 6'b000010) begin
+                IRRead = 0;
+                PCWrite = 0;  //j指令不顺序取指
+                pc_acc_en = 0;
+            end else begin
+                IRRead = 0;
+                PCWrite = 1; //PC自增
+                pc_acc_en = 1;
+            end
         end
+        
         /*S3_ID: begin//取指令写回IR
             
             PCSrcCtrl = 00;
@@ -631,29 +691,38 @@ always @(*) begin
             PCSrcCtrl = 2'b00; //PC加法器的第一个选择
         end*/
         S3_ID: begin //异步读取reg file的寄存器，同步存放数据入reg A,B ;生
+            IRRead = 0;
+            PCWrite   = 0;
+            pc_acc_en = 0;
             case (opcode) //提前扩展imm/offset
                 
                 6'b100011,
                 6'b101011,
-                6'b000100,
-                6'b000101,
                 6'b001010: begin
+                    PCSrcCtrl = 2'b00; //顺序执行指令
                     ExtCtrl = 1; //符号扩展
                 end
                 6'b001000,
                 6'b001001: begin
-                    PCSrcCtrl = 2'b01; //分支指令pc控制，branch_addr存储分支目标地址
+                    PCSrcCtrl = 2'b00; //顺序执行指令
+                    ExtCtrl = 1; //符号扩展
+                end
+                6'b000100,
+                6'b000101: begin
+                    PCSrcCtrl = 2'b01; //分支指令，分支目标
                     ExtCtrl = 1; //符号扩展
                 end
                 6'b001100,
                 6'b001101,
                 6'b001110,
-                6'b001011,
-                6'b000010:
+                6'b001011: begin
                 //jal
+                    PCSrcCtrl = 2'b00; //分支指令，分支目标
                     ExtCtrl = 0; //0扩展 
-                6'b000011: begin
-                    PCSrcCtrl = 2'b00; //jal指令pc控制
+                end
+                6'b000011,
+                6'b000010: begin
+                    PCSrcCtrl = 2'b10; //jal指令pc控制
                     ExtCtrl = 0; //0扩展
                 end
                 default: ExtCtrl = 0;
@@ -704,7 +773,7 @@ always @(*) begin
         
         S4_EX_R: begin //R型指令运算
            PCWrite = 0;
-           IRWrite = 0;
+           IRRead = 0;
            case (func) //根据func判断运算类型，决定控制信号
                6'b100000,
                6'b100001: begin
@@ -750,25 +819,26 @@ always @(*) begin
                end
                default: ALUCtrl = 4'b0000; 
            endcase
-           ALUWrite = 1; //ALUOut
+           ALUWrite = 0; //ALUOut锁存并输出
          end
               
          S5_WB_R: begin //R型指令写回
-            RegWrite = 1; //写寄存器使能         
+            /*RegWrite = 1; //写寄存器使能         
             RegDst = 2'b00; //写回到rd
-            Mem2Reg = 0; //写入数据来自ALU
-            ALUWrite = 0;  
+            Mem2Reg = 0; //写入数据来自ALU*/
+            ALUWrite = 1;  //ALUOut锁存
          end
             
          S6_EX_I_ALU: begin
            PCWrite = 0;
-           IRWrite = 0;
+           IRRead = 0;
+           pc_acc_en = 0;
            ALUSrcBCtrl = 2'b01; //第2个运算数是ext_imm
            case (opcode) //根据func判断运算类型，决定控制信号
                6'b001000,
                6'b001001,
-               6'b100011, //lw,sw
-               6'b101011,
+               //6'b100011, //lw,sw
+               //6'b101011,
                6'b100011,
                6'b101011: //包括lw,sw
                    ALUCtrl = 4'b0000; //addi,addiu
@@ -786,14 +856,17 @@ always @(*) begin
          
          
          S7_WB_I_ALU: begin
+            IRRead = 0;
+            PCWrite   = 0;
+            pc_acc_en = 0;
             RegWrite = 1; //写寄存器使能
             RegDst = 2'b01; //写回到rt
             Mem2Reg = 0; //从ALUOut写寄存器
          end
          
          S8_LS_LW: begin //lw 1T
-             DataRead = 0; //读内存使能
-             DataWrite = 1;
+             DataRead = 1; //读内存使能
+             DataWrite = 0;
          end
              
          S9_LS_LW: begin //lw 2T
@@ -807,7 +880,7 @@ always @(*) begin
              DataRead = 1; //从存储器输出
          end*/
          
-         S10_WB_LW: begin
+         S10_WB_LW: begin //lw写回寄存器堆的reg
              DRWrite = 0;
              RegWrite = 1;
              RegDst = 2'b01;
@@ -817,7 +890,7 @@ always @(*) begin
          S11_LS_SW: begin //sw
              DataRead = 0; 
              DataWrite = 1; //只是准备，未写入数据
-             RegDst = 0; //读取rt
+             RegDst = 2'b00; //读取rt
              //ALUSrcBCtrl = 2'b01; //ALU的第二个运算数是扩展后的数据
          end
          
@@ -828,9 +901,9 @@ always @(*) begin
          end*/
          
        
-         S12_EX_BR: begin
+         S12_EX_BR: begin //分支指令执行，计算(rs)-(rt)
              ALUCtrl = 4'b0001; //sub
-             case (opcode)
+             /*case (opcode)
                  6'b000100: begin //beq
                      if (zero == 1) begin //相等
                          PCSrcCtrl = 2'b01;
@@ -847,7 +920,8 @@ always @(*) begin
                          PCSrcCtrl = 2'b00;
                      end
                  end
-             endcase
+             endcase*/
+             ALUWrite = 1; //ALUOut输出
          end
          
          /*S13_EX_J: begin
@@ -874,8 +948,50 @@ always @(*) begin
          end    
          
          S16_PC_JAL: begin
+             case (opcode) //pc源选择
+                 6'b000100: begin //beq
+                     //if (zero == 1) begin //相等
+                     PCSrcCtrl = 2'b01;
+                     /*end 
+                     else if (zero == 0) begin
+                         PCSrcCtrl = 2'b00;
+                     end*/
+                 end
+                 6'b000101: begin //bne
+                     //if (zero == 0) begin //不相等
+                     PCSrcCtrl = 2'b01;
+                     /*end 
+                     else if (zero == 1) begin
+                         PCSrcCtrl = 2'b00;
+                     end*/
+                 end
+             endcase
              PCWrite = 1; //同步更新PC
          end
+         
+         S17_WB_R2: begin //R型指令写回第二个时钟周期
+             RegWrite = 1; //写寄存器使能         
+             RegDst = 2'b00; //写回到rd
+             Mem2Reg = 0; //写入数据来自ALU
+         end
+         
+         // lw,sw地址计算
+         S18_EX_LW,
+         S19_EX_SW: begin
+             PCWrite = 0;
+             IRRead = 0;
+             pc_acc_en = 0;
+             ALUSrcBCtrl = 2'b01;  // rs + imm
+             ALUCtrl = 4'b0000;    // add
+             ALUWrite = 1;     
+         end
+         
+         /*S20_PC_J: begin
+             PCSrcCtrl = 2'b10; //jump地址
+             PCWrite = 1; //j指令更新pc
+            
+         end*/
+         
    endcase     
 end                            
 endmodule

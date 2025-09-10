@@ -22,8 +22,8 @@
 
 module tmp_reg( //ÁÙÊ±¼Ä´æÆ÷A,B,C
     input clk, rst, //Ê±ÖÓºÍ¸´Î»¶Ë
-    input [4:0] in_data,
-    output reg [4:0] out_data
+    input [31:0] in_data,
+    output reg [31:0] out_data
 );
 always @(posedge clk or posedge rst) begin
     if (rst) begin

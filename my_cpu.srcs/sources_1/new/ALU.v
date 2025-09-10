@@ -24,7 +24,7 @@ module ALU(
     input [31:0] a,
     input [31:0] b,
     input [3:0] ALUCtrl,//øÿ÷∆‘ÀÀ„÷÷¿‡
-    output reg [32:0] result,
+    output reg [31:0] result,
     output wire zero_flag //0±Í÷æ
 );
 always @* begin
@@ -38,6 +38,8 @@ always @* begin
         4'b0110: result  = a << b; //¬ﬂº≠◊Û“∆
         4'b0111: result  = a >> b; //¬ﬂº≠”““∆
         4'b1000: result = $signed(a) >> b; //À„ ı”““∆
+        4'b1001: result = ($signed(a) < $signed(b)) ? 32'd1 : 32'd0;
+        4'b1010: result = (a < b) ? 32'd1 : 32'd0;
         default: result = a + b;
     endcase
 end

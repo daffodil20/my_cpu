@@ -28,7 +28,7 @@ module ALUOut(
 );
 always @(posedge clk or posedge rst) begin
     if (rst) begin
-        ALUOut = 32'b0;
+        ALUOut <= 32'b0;
     end else if (ALUWrite) begin//ÉÏÉýÑØÐ´ÈëALUOut
         ALUOut <= ALUResult;
     end

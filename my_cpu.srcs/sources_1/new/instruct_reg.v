@@ -45,7 +45,7 @@ always @(posedge clk or posedge rst) begin
          imm    <= 16'b0;
          addr   <= 26'b0;
     end 
-    else if (IRRead) begin
+    else if (IRRead) begin //´ÓIM¶ÁÈ¡Ö¸Áîµ½¼Ä´æÆ÷´æ´¢
         opcode <= instruct[31:26];
         rs <= instruct[25:21];
         rt <= instruct[20:16];
