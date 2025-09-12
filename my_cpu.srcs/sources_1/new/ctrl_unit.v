@@ -488,8 +488,8 @@ module ctrl_unit #(
 ) (input clk, rst,
      input [5:0] opcode, func,
      input zero, //data_path的输出连到这里
-     output reg IMRead, IRRead, PCWrite, pc_acc_en, RegWrite, DataRead, DataWrite, ALUWrite, Mem2Reg, ExtCtrl, DRWrite, //连接到data_path输入作为控制信号
-     output reg [1:0] PCSrcCtrl, ALUSrcBCtrl, RegDst,
+     output reg IMRead, IRRead, PCWrite, pc_acc_en, RegWrite, DataRead, DataWrite, ALUWrite, ExtCtrl, DRWrite, //连接到data_path输入作为控制信号
+     output reg [1:0] PCSrcCtrl, ALUSrcBCtrl, RegDst, Mem2Reg,
      output reg [3:0] ALUCtrl
 );     
 
@@ -619,13 +619,18 @@ always @(*) begin
          end
          //next_state = S1_IF_ID1;    //分支执行后回到取指状态
          
-         S13_EX_JAL_J: next_state = S1_IF_ID1;
+         S13_EX_JAL_J: begin
+             case(opcode)
+                  6'b000010:  next_state = S1_IF_ID1; //j
+                  6'b000011:  next_state = S14_WB_JAL; //jal写回寄存器
+             endcase
+         end
          
          //S13_EX_JAL_J: next_state = S20_PC_J;
          
          //S16_EX_JAL: next_state = S18_WB_JAL; //jal写回$31
          
-         S14_WB_JAL: next_state = S1_IF_ID1; 
+         S14_WB_JAL: next_state = S1_IF_ID1; //jal
          S15_EX_JR: next_state = S1_IF_ID1; 
          S16_PC_JAL: next_state = S1_IF_ID1; 
          S17_WB_R2: next_state = S1_IF_ID1; //R型写回后再取指
@@ -638,7 +643,8 @@ always @(*) begin
 end
  
 //生成控制信号
-always @(posedge clk) begin
+//always @(posedge clk) begin
+always @(*) begin //组合逻辑
     IMRead    = 0; //控制信号重置，防止被污染
     IRRead   = 0;
     PCWrite   = 0;
@@ -647,7 +653,7 @@ always @(posedge clk) begin
     DataRead  = 0;
     DataWrite = 0;
     ALUWrite  = 0;
-    Mem2Reg = 0; 
+    Mem2Reg = 2'b00; 
     ExtCtrl = 0;
     //zero = 0;
     DRWrite = 0;
@@ -660,25 +666,30 @@ always @(posedge clk) begin
             IMRead = 1; //从IM读取指令
             IRWrite = 0;*/
         //end
-        S1_IF_ID1: begin
+        S1_IF_ID1: begin //只从IM读指令
             //IMRead = 1; //
             //IRWrite = 1'b1; //从IM读取指令存入IR，同步输出多个字段（译码），
-            IRRead = 1'b1;
+            //IRRead = 1'b1;
+            IRRead = 0;
             PCWrite   = 0;
             pc_acc_en = 0;
             
         end
-        S2_IF2: begin   
+        S2_IF2: begin   //临时存储指令
+            IRRead = 1;
+            
             //IMRead = 0; //
-            if (opcode == 6'b000010) begin
-                IRRead = 0;
-                PCWrite = 0;  //j指令不顺序取指
+            /*if (opcode == 6'b000010 || opcode == 6'b000011 || (func == 6'b001000 && opcode == 6'b000000)) begin
+                //IRRead = 0;
+                IRRead = 1; 
+                PCWrite = 0;  //j,jal,jr指令不顺序取指，后续执行时跳转
                 pc_acc_en = 0;
             end else begin
-                IRRead = 0;
+                //IRRead = 0;
+                IRRead = 1;
                 PCWrite = 1; //PC自增
-                pc_acc_en = 1;
-            end
+                pc_acc_en = 1; //jal保存pc+4
+            end*/
         end
         
         /*S3_ID: begin//取指令写回IR
@@ -691,9 +702,22 @@ always @(posedge clk) begin
             PCSrcCtrl = 2'b00; //PC加法器的第一个选择
         end*/
         S3_ID: begin //异步读取reg file的寄存器，同步存放数据入reg A,B ;生
-            IRRead = 0;
+            /*IRRead = 0;
             PCWrite   = 0;
-            pc_acc_en = 0;
+            pc_acc_en = 0;*/
+            IRRead = 1;
+            if (opcode == 6'b000010 || opcode == 6'b000011 || (func == 6'b001000 && opcode == 6'b000000)) begin
+                //IRRead = 0;
+                //IRRead = 0; 
+                PCWrite = 0;  //j,jal,jr指令不顺序取指，后续执行时跳转
+                pc_acc_en = 0;
+            end else begin
+                //IRRead = 0;
+                //IRRead = 1;
+                PCWrite = 1; //PC自增
+                pc_acc_en = 1; //jal保存pc+4
+            end
+            
             case (opcode) //提前扩展imm/offset
                 
                 6'b100011,
@@ -722,12 +746,21 @@ always @(posedge clk) begin
                 end
                 6'b000011,
                 6'b000010: begin
-                    PCSrcCtrl = 2'b10; //jal指令pc控制
+                    PCSrcCtrl = 2'b10; //jal,j指令pc控制
                     ExtCtrl = 0; //0扩展
+                end
+                6'b000000: begin
+                    if (func == 6'b001000) begin
+                         PCSrcCtrl = 2'b11; //jr指令pc控制
+                         ExtCtrl = 0; //0扩展
+                    end
                 end
                 default: ExtCtrl = 0;
             endcase
             
+            //jr指令PCSrcCtrl提前准备
+            //if (func == 6'b001000 && opcode == 6'b000000)
+             //   PCSrcCtrl = 2'b11; //(rs)
             
             /*case (func) //根据func判断运算类型，决定控制信号
                6'b100000,
@@ -936,14 +969,17 @@ always @(posedge clk) begin
          end
          
          S14_WB_JAL: begin
+             Mem2Reg = 2'b10; //$31写入(pc)+4
              RegDst = 2'b10; //jal写回$31寄存器
              RegWrite = 1; //写reg使能                           
          end
          
          S15_EX_JR: begin            
              RegWrite = 0; //读取rs
-             PCWrite = 1;  //更新PC
              PCSrcCtrl = 2'b11; //(rs)
+             //PCSrcCtrl = 2'b10; //(rs)
+             PCWrite = 1;  //更新PC
+             
                                        
          end    
          

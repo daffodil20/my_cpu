@@ -27,7 +27,7 @@ module register_file(
     input [31:0] write_data,
     input RegWrite, //控制寄存器堆的读写
     output [31:0] read_data1, read_data2,
-    output [31:0] reg1_val, reg2_val, reg3_val //探测寄存器的内容
+    output [31:0] reg1_val, reg2_val, reg3_val, reg31_val //探测寄存器的内容
 );
 // 声明内部寄存器组
 // 一个包含 32 个 32 位寄存器的数组
@@ -54,5 +54,6 @@ assign read_data2 = (read_addr2 == 5'b0) ? 32'b0 : regs[read_addr2];
 assign reg1_val = regs[1];
 assign reg2_val = regs[2];
 assign reg3_val = regs[3];
+assign reg31_val = regs[31];
 
 endmodule

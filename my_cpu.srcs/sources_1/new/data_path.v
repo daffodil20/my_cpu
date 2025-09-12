@@ -28,8 +28,8 @@ module data_path(
     input DataWrite, DataRead, DRWrite,//内存读写
     
     input  [1:0]  PCSrcCtrl,
-    input  [1:0]  RegDst,
-    input  Mem2Reg, ExtCtrl,
+    input  [1:0]  RegDst, Mem2Reg,
+    input  ExtCtrl,
     input  [1:0]  ALUSrcBCtrl,
     input  [3:0]  ALUCtrl,
 
@@ -37,8 +37,9 @@ module data_path(
     output [31:0] instruct, pc_out, //输出当前指令和当前pc
     output zero,
     output [5:0] opcode, func, //因为控制单元需要指令字段信息
-    output [31:0] reg1_val, reg2_val, reg3_val, //探测通用寄存器的内容
-    output [31:0] ALU_result,
+    output [31:0] reg1_val, reg2_val, reg3_val, reg31_val,//探测通用寄存器的内容
+    output [31:0] ALU_result, pc_plus_4, read_data1,
+    output [4:0] rs,
     output [31:0] op1, op2, ALUOut, read_data2, write_data,
     output [25:0] addr
 );
@@ -51,7 +52,7 @@ wire [31:0] pc_next_in;
 //wire ALUCtrl, zero;
 
 wire [31:0] in_data, out_data;
-wire [31:0] branch_addr, jump_addr, pc_current, pc_adder, pc_plus_4; //pc多路选择器
+wire [31:0] branch_addr, jump_addr, pc_current, pc_adder; //pc多路选择器
 //wire [1:0] PCSrcCtrl, ALUSrcBCtrl;
 wire [31:0] pc_next;
 
@@ -71,7 +72,7 @@ PC pc( //pc寄存器，锁存pc
    .pc_out(pc_out)
 );
 
-wire [4:0] rs;    // 源寄存器1
+//wire [4:0] rs;    // 源寄存器1
 
  //branch_addr = pc_plus_4 + 
  
@@ -107,10 +108,18 @@ instruct_reg IR( //IR分解指令为本不同字段
    .addr(addr)
 );
 
+reg [31:0] pc_plus4_reg; //存储jal指令的pc+4
+always @(posedge clk or posedge rst) begin
+    if (rst)
+        pc_plus4_reg <= 32'b0;
+    else if (IRRead)  // 取指时把 pc+4 保存下来
+        pc_plus4_reg <= pc_out + 32'd4;
+end
+
 
 //reg ExCtrl;
 //wire [31:0] op1, op2, read_data1, read_data2;
-wire [31:0] read_data1;
+//wire [31:0] read_data1;
 
 //imm字段符号或0扩展
 ext_unit ext_unit(
@@ -127,7 +136,7 @@ PCSrc_mux pcSrc_mux (
     .pc_plus_4(pc_plus_4),
     .branch_addr(branch_addr),
     .jump_addr(jump_addr),
-    .rs(op1),
+    .rs(read_data1),
     .PCSrcCtrl(PCSrcCtrl), //控制单元发出的控制信号列输入到mux，成为PCSrcCtrl
     .pc_next(pc_next) //输出下一个pc，送回pc寄存器
  );
@@ -218,7 +227,8 @@ register_file reg_file (
         .read_data2(read_data2),
         .reg1_val(reg1_val),
         .reg2_val(reg2_val), 
-        .reg3_val(reg3_val)       
+        .reg3_val(reg3_val),
+        .reg31_val(reg31_val)       
          //Mem2Reg_mux的输出连到这里
 );
 
@@ -312,13 +322,16 @@ end
 if (opcode = 6'b001011 && ALUOut >= 0) begin
     ALUOut = 0; //写回寄存器的是1
 end*/
-
+//wire [31:0] pc_4;
+//assign pc_4 = pc_out + 3'd4;
 Mem2Reg_mux mem2reg_mux( //写回的数据来自ALU还是内存
     .ALUOut(ALUOut),
     .MDR_data(write_data),
+    .pc_plus_4(pc_plus4_reg), //jal指令的地址+4
     .Mem2Reg(Mem2Reg),
     .write_data(data_wb)
 );
+
 
 data_reg DR(
     .clk(clk),

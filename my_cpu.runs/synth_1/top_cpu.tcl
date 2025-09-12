@@ -18,6 +18,7 @@ proc create_report { reportName command } {
   }
 }
 set_param xicom.use_bs_reader 1
+set_msg_config -id {Common 17-41} -limit 10000000
 create_project -in_memory -part xc7z020clg484-2
 
 set_param project.singleFileAddWarning.threshold 0
@@ -38,6 +39,7 @@ read_verilog -library xil_defaultlib {
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/PCSrc_mux.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/PC_accumulator.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/RegDst_mux.v
+  C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/cpu.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/ctrl_unit.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_mem.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v
@@ -57,6 +59,9 @@ read_verilog -library xil_defaultlib {
 foreach dcp [get_files -quiet -all -filter file_type=="Design\ Checkpoint"] {
   set_property used_in_implementation false $dcp
 }
+read_xdc C:/verilog_simulation/my_cpu/my_cpu.srcs/constrs_1/new/top_cpu.xdc
+set_property used_in_implementation false [get_files C:/verilog_simulation/my_cpu/my_cpu.srcs/constrs_1/new/top_cpu.xdc]
+
 set_param ips.enableIPCacheLiteLoad 1
 close [open __synthesis_is_running__ w]
 

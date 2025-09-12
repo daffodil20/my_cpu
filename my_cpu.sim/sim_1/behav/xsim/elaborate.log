@@ -3,9 +3,9 @@ Copyright 1986-1999, 2001-2018 Xilinx, Inc. All Rights Reserved.
 Running: C:/Xilinx2/Vivado/2018.3/bin/unwrapped/win64.o/xelab.exe -wto 2c7965db74654db6a8418d9403cb59c5 --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot tb_top_cpu_behav xil_defaultlib.tb_top_cpu xil_defaultlib.glbl -log elaborate.log 
 Using 2 slave threads.
 Starting static elaboration
-WARNING: [VRFC 10-3091] actual bit length 5 differs from formal bit length 6 for port 'shamt' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:245]
-WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'read_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:291]
-WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'write_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:292]
+WARNING: [VRFC 10-3091] actual bit length 5 differs from formal bit length 6 for port 'shamt' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:255]
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'read_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:301]
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'write_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:302]
 Completed static elaboration
 Starting simulation data flow analysis
 Completed simulation data flow analysis

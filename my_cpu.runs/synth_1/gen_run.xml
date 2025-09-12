@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7z020clg484-2" LaunchTime="1757466784">
+<GenRun Id="synth_1" LaunchPart="xc7z020clg484-2" LaunchTime="1757665398">
   <File Type="PA-TCL" Name="top_cpu.tcl"/>
   <File Type="RDS-PROPCONSTRS" Name="top_cpu_drc_synth.rpt"/>
   <File Type="REPORTS-TCL" Name="top_cpu_reports.tcl"/>
@@ -61,6 +61,13 @@
       </FileInfo>
     </File>
     <File Path="$PSRCDIR/sources_1/new/RegDst_mux.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/cpu.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
@@ -168,6 +175,12 @@
   </FileSet>
   <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1">
     <Filter Type="Constrs"/>
+    <File Path="$PSRCDIR/constrs_1/new/top_cpu.xdc">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+      </FileInfo>
+    </File>
     <Config>
       <Option Name="ConstrsType" Val="XDC"/>
     </Config>
