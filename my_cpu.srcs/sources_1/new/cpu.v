@@ -26,7 +26,7 @@ module cpu(
     output wire [31:0] pc_out, ALU_result,
     //output wire [31:0] alu_result
     output wire [31:0] instruct,
-    output wire [31:0] reg1_val, reg2_val, reg3_val, reg31_val,//Ì½²â¼Ä´æÆ÷µÄÄÚÈİ
+    output wire [31:0] reg1_val, reg2_val, reg3_val, reg5_val, reg6_val, reg7_val, reg8_val, reg9_val, reg10_val, reg31_val,//Ì½²â¼Ä´æÆ÷µÄÄÚÈİ
     output wire [31:0] op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read_data1, pc_acc_en,
     output wire [5:0] opcode, func,
     output wire [4:0] rs, shamt,
@@ -103,10 +103,16 @@ data_path dp(
     .reg1_val(reg1_val), 
     .reg2_val(reg2_val), 
     .reg3_val(reg3_val), //Ì½²â¼Ä´æÆ÷µÄÄÚÈİ
+    .reg5_val(reg5_val),
+    .reg6_val(reg6_val), 
+    .reg7_val(reg7_val),
+    .reg8_val(reg8_val),
+    .reg9_val(reg9_val), 
+    .reg10_val(reg10_val),
     .reg31_val(reg31_val), 
     .ALU_result(ALU_result),
     .pc_plus_4(pc_plus_4),
-    //.pc_plus_4(pc_out+3'd4),
+    //.pc_plus_4(pc_out+3'ssdss
     .read_data1(read_data1),
     .rs(rs),
     .shamt(shamt),

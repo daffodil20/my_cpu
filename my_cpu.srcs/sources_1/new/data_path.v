@@ -37,7 +37,7 @@ module data_path(
     output [31:0] instruct, pc_out, //输出当前指令和当前pc
     output zero,
     output [5:0] opcode, func, //因为控制单元需要指令字段信息
-    output [31:0] reg1_val, reg2_val, reg3_val, reg31_val,//探测通用寄存器的内容
+    output [31:0] reg1_val, reg2_val, reg3_val, reg5_val, reg6_val, reg7_val, reg8_val, reg9_val, reg10_val, reg31_val,//探测通用寄存器的内容
     output [31:0] ALU_result, pc_plus_4, read_data1,
     output [4:0] rs, shamt,
     output [31:0] op1, op2, ALUOut, read_data2, write_data,
@@ -228,6 +228,12 @@ register_file reg_file (
         .reg1_val(reg1_val),
         .reg2_val(reg2_val), 
         .reg3_val(reg3_val),
+        .reg5_val(reg5_val),
+        .reg6_val(reg6_val), 
+        .reg7_val(reg7_val),
+        .reg8_val(reg8_val),
+        .reg9_val(reg9_val), 
+        .reg10_val(reg10_val),
         .reg31_val(reg31_val)       
          //Mem2Reg_mux的输出连到这里
 );

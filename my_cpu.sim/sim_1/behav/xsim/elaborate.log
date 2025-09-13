@@ -4,9 +4,9 @@ Running: C:/Xilinx2/Vivado/2018.3/bin/unwrapped/win64.o/xelab.exe -wto 2c7965db7
 Using 2 slave threads.
 Starting static elaboration
 WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 1 for port 'pc_acc_en' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/cpu.v:85]
-WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'read_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:301]
-WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'write_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:302]
-WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 1 for port 'pc_acc_en' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/cpu.v:131]
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'read_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:307]
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'write_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:308]
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 1 for port 'pc_acc_en' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/cpu.v:137]
 Completed static elaboration
 Starting simulation data flow analysis
 Completed simulation data flow analysis

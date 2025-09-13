@@ -644,8 +644,8 @@ always @(*) begin
 end
  
 //生成控制信号
-//always @(posedge clk) begin
-always @(*) begin //组合逻辑
+always @(posedge clk) begin
+//always @(*) begin //组合逻辑
     IMRead    = 0; //控制信号重置，防止被污染
     IRRead   = 0;
     PCWrite   = 0;
@@ -870,8 +870,8 @@ always @(*) begin //组合逻辑
                end
                default: ALUCtrl = 4'b0000; 
            endcase
-           ALUWrite = 0; //ALUOut锁存并输出
-           //ALUWrite = 1; //ALUOut锁存并输出
+           //ALUWrite = 0; //ALUOut锁存并输出
+           ALUWrite = 1; //ALUOut提前锁存并输出
          end
               
          S5_WB_R: begin //R型指令写回
@@ -880,6 +880,9 @@ always @(*) begin //组合逻辑
             Mem2Reg = 0; //写入数据来自ALU
             ALUWrite = 1;  //ALUOut锁存*/
             ALUWrite = 1;  //ALUOut锁存
+            RegWrite = 1; //写寄存器使能         
+            RegDst = 2'b00; //写回到rd
+            Mem2Reg = 2'b00; //写入数据来自ALU
          end
             
          S6_EX_I_ALU: begin
@@ -1026,9 +1029,10 @@ always @(*) begin //组合逻辑
          end
          
          S17_WB_R2: begin //R型指令写回第二个时钟周期
+             ALUWrite = 1; 
              RegWrite = 1; //写寄存器使能         
              RegDst = 2'b00; //写回到rd
-             Mem2Reg = 0; //写入数据来自ALU
+             Mem2Reg = 2'b00; //写入数据来自ALU
          end
          
          // lw,sw地址计算

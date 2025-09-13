@@ -24,7 +24,7 @@ module tb_top_cpu;
     reg clk;
     reg rst;
     wire [31:0] pc_out, instruct;
-    wire [31:0] reg1_val, reg2_val, reg3_val, reg31_val;
+    wire [31:0] reg1_val, reg2_val, reg3_val, reg5_val, reg6_val, reg7_val, reg8_val, reg9_val, reg10_val, reg31_val;
     wire [31:0] ALU_result, op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read_data1;
     wire [5:0] opcode, func;
     wire [4:0] rs, shamt;
@@ -46,6 +46,12 @@ module tb_top_cpu;
         .reg2_val(reg2_val),
         .reg3_val(reg3_val),
         .reg31_val(reg31_val),
+        .reg5_val(reg5_val),
+        .reg6_val(reg6_val), 
+        .reg7_val(reg7_val),
+        .reg8_val(reg8_val),
+        .reg9_val(reg9_val), 
+        .reg10_val(reg10_val),
         .ALU_result(ALU_result),
         .pc_plus_4(pc_plus_4),
         .read_data1(read_data1),
