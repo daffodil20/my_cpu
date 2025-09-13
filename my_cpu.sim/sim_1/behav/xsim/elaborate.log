@@ -3,24 +3,32 @@ Copyright 1986-1999, 2001-2018 Xilinx, Inc. All Rights Reserved.
 Running: C:/Xilinx2/Vivado/2018.3/bin/unwrapped/win64.o/xelab.exe -wto 2c7965db74654db6a8418d9403cb59c5 --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot tb_top_cpu_behav xil_defaultlib.tb_top_cpu xil_defaultlib.glbl -log elaborate.log 
 Using 2 slave threads.
 Starting static elaboration
-ERROR: [VRFC 10-3180] cannot find port 'addr' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:67]
-ERROR: [VRFC 10-3180] cannot find port 'DataWrite' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:66]
-ERROR: [VRFC 10-3180] cannot find port 'DataRead' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:65]
-ERROR: [VRFC 10-3180] cannot find port 'Mem2Reg' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:64]
-ERROR: [VRFC 10-3180] cannot find port 'RegWrite' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:63]
-ERROR: [VRFC 10-3180] cannot find port 'ALUWrite' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:62]
-ERROR: [VRFC 10-3180] cannot find port 'PCWrite' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:61]
-ERROR: [VRFC 10-3180] cannot find port 'IRRead' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:60]
-ERROR: [VRFC 10-3180] cannot find port 'rs' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:59]
-ERROR: [VRFC 10-3180] cannot find port 'func' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:58]
-ERROR: [VRFC 10-3180] cannot find port 'opcode' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:57]
-ERROR: [VRFC 10-3180] cannot find port 'read_data2' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:56]
-ERROR: [VRFC 10-3180] cannot find port 'write_data' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:55]
-ERROR: [VRFC 10-3180] cannot find port 'ALUOut' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:54]
-ERROR: [VRFC 10-3180] cannot find port 'PCSrcCtrl' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:53]
-ERROR: [VRFC 10-3180] cannot find port 'RegDst' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:52]
-ERROR: [VRFC 10-3180] cannot find port 'op2' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:51]
-ERROR: [VRFC 10-3180] cannot find port 'op1' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:50]
-ERROR: [VRFC 10-3180] cannot find port 'read_data1' on this module [C:/verilog_simulation/my_cpu/my_cpu.srcs/sim_1/new/tb_top_cpu.v:49]
-INFO: [#UNDEF] Sorry, too many errors..
-ERROR: [XSIM 43-3322] Static elaboration of top level Verilog design unit(s) in library work failed.
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 1 for port 'pc_acc_en' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/cpu.v:85]
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'read_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:301]
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 12 for port 'write_addr' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_path.v:302]
+WARNING: [VRFC 10-3091] actual bit length 32 differs from formal bit length 1 for port 'pc_acc_en' [C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/cpu.v:131]
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module xil_defaultlib.PC_accumulator
+Compiling module xil_defaultlib.PC
+Compiling module xil_defaultlib.instruct_mem
+Compiling module xil_defaultlib.instruct_reg
+Compiling module xil_defaultlib.ext_unit
+Compiling module xil_defaultlib.PCSrc_mux
+Compiling module xil_defaultlib.register_file
+Compiling module xil_defaultlib.tmp_reg
+Compiling module xil_defaultlib.ALUSrcB_mux
+Compiling module xil_defaultlib.ALU
+Compiling module xil_defaultlib.ALUOut
+Compiling module xil_defaultlib.data_mem
+Compiling module xil_defaultlib.Mem2Reg_mux
+Compiling module xil_defaultlib.data_reg
+Compiling module xil_defaultlib.RegDst_mux
+Compiling module xil_defaultlib.data_path
+Compiling module xil_defaultlib.ctrl_unit
+Compiling module xil_defaultlib.cpu
+Compiling module xil_defaultlib.tb_top_cpu
+Compiling module xil_defaultlib.glbl
+Built simulation snapshot tb_top_cpu_behav

@@ -39,7 +39,7 @@ module data_path(
     output [5:0] opcode, func, //因为控制单元需要指令字段信息
     output [31:0] reg1_val, reg2_val, reg3_val, reg31_val,//探测通用寄存器的内容
     output [31:0] ALU_result, pc_plus_4, read_data1,
-    output [4:0] rs,
+    output [4:0] rs, shamt,
     output [31:0] op1, op2, ALUOut, read_data2, write_data,
     output [25:0] addr
 );
@@ -81,7 +81,7 @@ PC pc( //pc寄存器，锁存pc
 //wire [5:0] opcode;  // 操作码
 wire [4:0] rt;      // 源寄存器2 / 目的寄存器
 wire [4:0] rd;     // 目的寄存器（R 型）
-wire [4:0] shamt;  // 移位量
+//wire [4:0] shamt;  // 移位量
 //wire [5:0] func;   // 功能码（R 型）
 wire [15:0] imm;    // 立即数（I 型）
 //wire [25:0] addr;    // 跳转地址（J 型） 
@@ -249,7 +249,7 @@ tmp_reg reg_B(
      .out_data(regB_val)
 );
 
-//实例化多路选择器
+//实例化运算数2的多路选择器
 ALUSrcB_mux alu_srcb_mux(
     .regB(regB_val),         // 临时寄存器B输出
     .shamt(shamt),

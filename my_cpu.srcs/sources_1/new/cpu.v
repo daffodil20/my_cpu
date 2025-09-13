@@ -23,29 +23,39 @@
 module cpu(
     input  wire clk,
     input  wire rst,
-    output wire [31:0] pc_out, ALU_result
+    output wire [31:0] pc_out, ALU_result,
     //output wire [31:0] alu_result
+    output wire [31:0] instruct,
+    output wire [31:0] reg1_val, reg2_val, reg3_val, reg31_val,//Ì½²â¼Ä´æÆ÷µÄÄÚÈÝ
+    output wire [31:0] op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read_data1, pc_acc_en,
+    output wire [5:0] opcode, func,
+    output wire [4:0] rs, shamt,
+    output wire [1:0] RegDst, PCSrcCtrl, Mem2Reg,
+    output wire [3:0] ALUCtrl,
+    output wire IRRead, PCWrite, ALUWrite, RegWrite, DataRead, DataWrite,
+    output wire zero,
+    output wire [25:0] addr
 );
 
 
 wire PCWrite, RegWrite;//¼Ä´æÆ÷¶Ñ¶ÁÐ´Êý¾Ý
 wire IRRead, ALUWrite;//¼Ä´æÆ÷¶Ñ¶ÁÐ´Êý¾Ý
-wire zero;
-wire [4:0] rs;
+//wire zero;
+//wire [4:0] rs;
 wire [5:0] opcode, func;
 wire DataWrite, DataRead; 
 wire DRWrite;//ÄÚ´æ¶ÁÐ´
-wire [1:0]  PCSrcCtrl;
-wire [1:0]  RegDst;
-wire [1:0] Mem2Reg;
+//wire [1:0]  PCSrcCtrl;
+//wire [1:0]  RegDst;
+//wire [1:0] Mem2Reg;
 wire ExtCtrl;
 wire [1:0]  ALUSrcBCtrl;
-wire [3:0]  ALUCtrl;
+//wire [3:0]  ALUCtrl;
 //wire [31:0] ALU_result, instruct;
-wire [31:0] instruct;
-wire [25:0] addr;
-wire [31:0] pc_acc_en, op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read_data1; //0±êÖ¾
-wire [31:0] reg1_val, reg2_val, reg3_val, reg31_val;
+//wire [31:0] instruct;
+//wire [25:0] addr;
+//wire [31:0] pc_acc_en, op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read_data1; //0±êÖ¾
+//wire [31:0] reg1_val, reg2_val, reg3_val, reg31_val;
 
 
 
@@ -99,6 +109,7 @@ data_path dp(
     //.pc_plus_4(pc_out+3'd4),
     .read_data1(read_data1),
     .rs(rs),
+    .shamt(shamt),
     .op1(op1),
     .op2(op2),
     .ALUOut(ALUOut),

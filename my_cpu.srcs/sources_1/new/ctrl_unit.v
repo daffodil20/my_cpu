@@ -572,6 +572,7 @@ always @(*) begin
          
          S4_EX_R: next_state = S5_WB_R; //R型指令写回rd
          S5_WB_R: next_state = S17_WB_R2;
+         //S5_WB_R: next_state = S1_IF_ID1;
          
          S6_EX_I_ALU: begin //I型运算执行，不包括bne,beq
              if (opcode == 6'b100011) begin
@@ -731,11 +732,28 @@ always @(*) begin //组合逻辑
                     PCSrcCtrl = 2'b00; //顺序执行指令
                     ExtCtrl = 1; //符号扩展
                 end
-                6'b000100,
-                6'b000101: begin
-                    PCSrcCtrl = 2'b01; //分支指令，分支目标
+                
+                6'b000100: begin
+                    if (zero == 1) begin //相等
+                         PCSrcCtrl = 2'b01;
+                    end 
+                    else if (zero == 0) begin
+                         PCSrcCtrl = 2'b00;
+                    end
                     ExtCtrl = 1; //符号扩展
                 end
+                
+                6'b000101: begin
+                    if (zero == 0) begin //不相等
+                         PCSrcCtrl = 2'b01;
+                    end 
+                    else if (zero == 1) begin
+                         PCSrcCtrl = 2'b00;
+                    end
+                    //PCSrcCtrl = 2'b01; //分支指令，分支目标
+                    ExtCtrl = 1; //符号扩展
+                end
+                
                 6'b001100,
                 6'b001101,
                 6'b001110,
@@ -853,12 +871,14 @@ always @(*) begin //组合逻辑
                default: ALUCtrl = 4'b0000; 
            endcase
            ALUWrite = 0; //ALUOut锁存并输出
+           //ALUWrite = 1; //ALUOut锁存并输出
          end
               
          S5_WB_R: begin //R型指令写回
             /*RegWrite = 1; //写寄存器使能         
             RegDst = 2'b00; //写回到rd
-            Mem2Reg = 0; //写入数据来自ALU*/
+            Mem2Reg = 0; //写入数据来自ALU
+            ALUWrite = 1;  //ALUOut锁存*/
             ALUWrite = 1;  //ALUOut锁存
          end
             

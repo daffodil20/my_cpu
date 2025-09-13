@@ -21,7 +21,7 @@
 
 
 module ALUSrcB_mux(
-    input [5:0] shamt, //R型指令的最低6位
+    input [4:0] shamt, //R型指令的最低6位
     input [31:0] regB, ext_data, //第二个寄存器，扩展后的imm/offset，都是32位
     input [1:0] ALUSrcBCtrl,
     output reg [31:0] ALU_in_2 //输出第二个运算数

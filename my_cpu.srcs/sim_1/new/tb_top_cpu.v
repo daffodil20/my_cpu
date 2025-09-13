@@ -27,14 +27,16 @@ module tb_top_cpu;
     wire [31:0] reg1_val, reg2_val, reg3_val, reg31_val;
     wire [31:0] ALU_result, op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read_data1;
     wire [5:0] opcode, func;
-    wire [4:0] rs;
+    wire [4:0] rs, shamt;
     wire IRRead, PCWrite, ALUWrite, RegWrite, DataWrite, DataRead;
     wire [1:0] RegDst, PCSrcCtrl, Mem2Reg;
+    wire [3:0] ALUCtrl;
     wire zero;
     wire [25:0] addr;
 
     // 实例化 top_cpu
-    top_cpu top_cpu (
+    //top_cpu top_cpu (
+    cpu cpu (
         .clk(clk),
         .rst(rst),
         .pc_out(pc_out),
@@ -57,11 +59,13 @@ module tb_top_cpu;
         .opcode(opcode),
         .func(func),
         .rs(rs),
+        .shamt(shamt),
         .IRRead(IRRead),
         .PCWrite(PCWrite),
         .ALUWrite(ALUWrite),
         .RegWrite(RegWrite),
         .Mem2Reg(Mem2Reg),
+        .ALUCtrl(ALUCtrl),
         .DataRead(DataRead),
         .DataWrite(DataWrite),
         .addr(addr)
@@ -101,12 +105,12 @@ module tb_top_cpu;
 
     // 仿真结束时间
     initial begin
-        #500;  // 仿真 2000ns
+        #2000;  // 仿真 2000ns
         $stop;  // 停止仿真
     end
     
     initial begin
-        $monitor("time=%0t, DM[0]=%h, regs[4]=%h, regs[6]=%h, regs[31]=%h", $time, top_cpu.dp.DM.DM[0], top_cpu.dp.reg_file.regs[4], top_cpu.dp.reg_file.regs[6], top_cpu.dp.reg_file.regs[31]);
+        $monitor("time=%0t, DM[0]=%h, regs[1]=%h, regs[2]=%h, regs[3]=%h, regs[4]=%h, regs[6]=%h, regs[31]=%h", $time, cpu.dp.DM.DM[0], cpu.dp.reg_file.regs[1], cpu.dp.reg_file.regs[2], cpu.dp.reg_file.regs[3], cpu.dp.reg_file.regs[4], cpu.dp.reg_file.regs[6], cpu.dp.reg_file.regs[31]);
     end
     
 endmodule
