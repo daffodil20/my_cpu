@@ -23,13 +23,13 @@
 module cpu(
     input  wire clk,
     input  wire rst,
-    output wire [31:0] pc_out
+    output wire [31:0] pc_out, ALU_result
     //output wire [31:0] alu_result
 );
 
 
 wire PCWrite, RegWrite;//¼Ä´æÆ÷¶Ñ¶ÁÐ´Êý¾Ý
-wire RegWrite, IRRead, PCWrite, ALUWrite;//¼Ä´æÆ÷¶Ñ¶ÁÐ´Êý¾Ý
+wire IRRead, ALUWrite;//¼Ä´æÆ÷¶Ñ¶ÁÐ´Êý¾Ý
 wire zero;
 wire [4:0] rs;
 wire [5:0] opcode, func;
@@ -41,7 +41,8 @@ wire [1:0] Mem2Reg;
 wire ExtCtrl;
 wire [1:0]  ALUSrcBCtrl;
 wire [3:0]  ALUCtrl;
-wire [31:0] ALU_result, instruct;
+//wire [31:0] ALU_result, instruct;
+wire [31:0] instruct;
 wire [25:0] addr;
 wire [31:0] pc_acc_en, op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read_data1; //0±êÖ¾
 wire [31:0] reg1_val, reg2_val, reg3_val, reg31_val;

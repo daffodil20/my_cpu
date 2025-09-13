@@ -23,7 +23,10 @@
 module top_cpu(
     input clk, rst,    //仿真没有输出，观察pc,aluout即可
     //output [31:0] pc_out, //输出下一个指令和pc
-    output [7:0] led //低8位pc
+    output [7:0] led, //低8位pc
+    //output [15:0] ALU_result,
+    output [7:0] seg,  // 七段管段选
+    output [2:0] sel   // 七段管位选
     /*output [31:0] instruct,
     output [31:0] reg1_val, reg2_val, reg3_val, reg31_val,//探测寄存器的内容
     output [31:0] ALU_result, op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read_data1,
@@ -54,6 +57,9 @@ wire [31:0] pc_acc_en, op1, op2, ALUOut, write_data, read_data2, pc_plus_4, read
 wire [31:0] reg1_val, reg2_val, reg3_val, reg31_val;*/
 
 wire [31:0] pc_out;
+wire [31:0] alu_val;
+//wire [7:0] seg;
+//wire [2:0] sel;
 
 // 分频器：24MHz → 1kHz 扫描频率
  reg [14:0] div_cnt = 0;   // 2^15 / 24M ≈ 1.3ms
@@ -78,11 +84,23 @@ wire [31:0] pc_out;
 cpu cpu(
     .clk(scan_clk),   // 给CPU一个慢时钟，方便肉眼看变化
     .rst(rst),
-    .pc_out(pc_out)
+    .pc_out(pc_out),
+    .ALU_result(alu_val) //输出alu_val，送入seg7
+);
+
+// 实例化数码管驱动
+_7seg_display seg7(
+    .clk(clk),
+    .rst(rst),
+    .result(alu_val[15:0]),  // 先显示低 16 位
+    .seg(seg),              // 七段管段选
+    .sel(sel)                 // 七段管位选
 );
 
 // 让LED显示PC低8位
 assign led = pc_out[7:0];
+
+//assign ALU_result = alu_val;  // 仿真对外保留完整的32位结果
 
 // 实例化数据通路，输出当前指令和当前pc
 /*data_path dp(

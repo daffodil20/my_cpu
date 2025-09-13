@@ -1,7 +1,7 @@
 Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-| Date         : Fri Sep 12 16:24:47 2025
+| Date         : Sat Sep 13 09:16:30 2025
 | Host         : DESKTOP-JD0JLR0 running 64-bit major release  (build 9200)
 | Command      : report_control_sets -verbose -file top_cpu_control_sets_placed.rpt
 | Design       : top_cpu
@@ -23,8 +23,8 @@ Table of Contents
 +----------------------------------------------------------+-------+
 |                          Status                          | Count |
 +----------------------------------------------------------+-------+
-| Number of unique control sets                            |    21 |
-| Unused register locations in slices containing registers |    14 |
+| Number of unique control sets                            |    22 |
+| Unused register locations in slices containing registers |    27 |
 +----------------------------------------------------------+-------+
 
 
@@ -34,6 +34,7 @@ Table of Contents
 +--------+--------------+
 | Fanout | Control Sets |
 +--------+--------------+
+|      2 |            1 |
 |      8 |            2 |
 |      9 |            1 |
 |    16+ |           18 |
@@ -46,11 +47,11 @@ Table of Contents
 +--------------+-----------------------+------------------------+-----------------+--------------+
 | Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
 +--------------+-----------------------+------------------------+-----------------+--------------+
-| No           | No                    | No                     |               9 |            4 |
-| No           | No                    | Yes                    |              89 |           37 |
+| No           | No                    | No                     |               9 |            3 |
+| No           | No                    | Yes                    |             108 |           41 |
 | No           | Yes                   | No                     |               0 |            0 |
 | Yes          | No                    | No                     |               0 |            0 |
-| Yes          | No                    | Yes                    |             528 |          208 |
+| Yes          | No                    | Yes                    |             528 |          201 |
 | Yes          | Yes                   | No                     |               0 |            0 |
 +--------------+-----------------------+------------------------+-----------------+--------------+
 
@@ -58,30 +59,31 @@ Table of Contents
 4. Detailed Control Set Information
 -----------------------------------
 
-+---------------------------+------------------------------+------------------+------------------+----------------+
-|        Clock Signal       |         Enable Signal        | Set/Reset Signal | Slice Load Count | Bel Load Count |
-+---------------------------+------------------------------+------------------+------------------+----------------+
-|  scan_clk_reg_n_0_BUFG    | cpu/ctrl_unit/IRRead         | rst_IBUF         |                2 |              8 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/pc/PCWrite            | rst_IBUF         |                5 |              8 |
-|  cpu/ctrl_unit/next_state |                              |                  |                4 |              9 |
-|  clk_IBUF_BUFG            |                              | rst_IBUF         |                4 |             16 |
-|  scan_clk_reg_n_0_BUFG    | cpu/ctrl_unit/E[0]           | rst_IBUF         |               21 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_8[0]   | rst_IBUF         |               11 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/E[0]               | rst_IBUF         |               12 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_6[0]   | rst_IBUF         |                8 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_4[0]   | rst_IBUF         |               11 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_5[0]   | rst_IBUF         |               20 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_3[0]   | rst_IBUF         |               13 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_7[0]   | rst_IBUF         |               15 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/opcode_reg[3]_1[0] | rst_IBUF         |                7 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_7[0]     | rst_IBUF         |                8 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_8[0]     | rst_IBUF         |               12 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_4[0]     | rst_IBUF         |               15 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_6[0]     | rst_IBUF         |               16 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_3[0]     | rst_IBUF         |               13 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[1]_0[0]     | rst_IBUF         |                7 |             32 |
-|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_5[0]     | rst_IBUF         |               12 |             32 |
-|  scan_clk_reg_n_0_BUFG    |                              | rst_IBUF         |               33 |             73 |
-+---------------------------+------------------------------+------------------+------------------+----------------+
++---------------------------+--------------------------------------------+------------------+------------------+----------------+
+|        Clock Signal       |                Enable Signal               | Set/Reset Signal | Slice Load Count | Bel Load Count |
++---------------------------+--------------------------------------------+------------------+------------------+----------------+
+|  seg7/scan_clk_reg_n_0    |                                            | rst_IBUF         |                1 |              2 |
+|  scan_clk_reg_n_0_BUFG    | cpu/ctrl_unit/E[0]                         | rst_IBUF         |                2 |              8 |
+|  scan_clk_reg_n_0_BUFG    | cpu/ctrl_unit/IRRead                       | rst_IBUF         |                2 |              8 |
+|  cpu/ctrl_unit/next_state |                                            |                  |                3 |              9 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_1[0]                   | rst_IBUF         |               11 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_3[0]                   | rst_IBUF         |               11 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_4[0]                   | rst_IBUF         |               15 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_5[0]                   | rst_IBUF         |               11 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_6[0]                   | rst_IBUF         |               10 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[1]_0[0]                   | rst_IBUF         |               13 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/rt_reg[0]_2[0]                   | rst_IBUF         |               14 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/E[0]                             | rst_IBUF         |               14 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_5[0]                 | rst_IBUF         |               15 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_1[0]                 | rst_IBUF         |               10 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/opcode_reg[3]_1[0]               | rst_IBUF         |                7 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_4[0]                 | rst_IBUF         |                8 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_2[0]                 | rst_IBUF         |               10 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_6[0]                 | rst_IBUF         |                8 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/dp/IR/func_reg[4]_3[0]                 | rst_IBUF         |               20 |             32 |
+|  scan_clk_reg_n_0_BUFG    | cpu/ctrl_unit/FSM_onehot_state_reg[4]_0[0] | rst_IBUF         |               20 |             32 |
+|  clk_IBUF_BUFG            |                                            | rst_IBUF         |                9 |             33 |
+|  scan_clk_reg_n_0_BUFG    |                                            | rst_IBUF         |               31 |             73 |
++---------------------------+--------------------------------------------+------------------+------------------+----------------+
 
 

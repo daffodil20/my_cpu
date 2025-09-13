@@ -39,6 +39,7 @@ read_verilog -library xil_defaultlib {
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/PCSrc_mux.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/PC_accumulator.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/RegDst_mux.v
+  C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/_7seg_display.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/cpu.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/ctrl_unit.v
   C:/verilog_simulation/my_cpu/my_cpu.srcs/sources_1/new/data_mem.v
