@@ -111,12 +111,13 @@ module tb_top_cpu;
 
     // 仿真结束时间
     initial begin
-        #2000;  // 仿真 2000ns
+        #3000;  // 仿真 2000ns
         $stop;  // 停止仿真
     end
     
     initial begin
-        $monitor("time=%0t, DM[0]=%h, regs[1]=%h, regs[2]=%h, regs[3]=%h, regs[4]=%h, regs[6]=%h, regs[31]=%h", $time, cpu.dp.DM.DM[0], cpu.dp.reg_file.regs[1], cpu.dp.reg_file.regs[2], cpu.dp.reg_file.regs[3], cpu.dp.reg_file.regs[4], cpu.dp.reg_file.regs[6], cpu.dp.reg_file.regs[31]);
+        $monitor("time=%0t, DM[0]=%h, regs[1]=%h, regs[2]=%h, regs[3]=%h, regs[4]=%h, regs[5]=%h, regs[6]=%h, regs[7]=%h, regs[8]=%h, regs[9]=%h, regs[10]=%h, regs[31]=%h", $time, cpu.dp.DM.DM[0], cpu.dp.reg_file.regs[1], cpu.dp.reg_file.regs[2], cpu.dp.reg_file.regs[3], cpu.dp.reg_file.regs[4], 
+                   cpu.dp.reg_file.regs[5], cpu.dp.reg_file.regs[6], cpu.dp.reg_file.regs[7], cpu.dp.reg_file.regs[8], cpu.dp.reg_file.regs[9], cpu.dp.reg_file.regs[10], cpu.dp.reg_file.regs[31]);
     end
     
 endmodule

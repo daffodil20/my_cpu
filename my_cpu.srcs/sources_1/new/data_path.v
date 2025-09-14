@@ -264,13 +264,15 @@ ALUSrcB_mux alu_srcb_mux(
     .ALU_in_2(op2)       // ALU 第二个操作数
 );
 
+wire overflow; //溢出标志
 // ALU
 ALU alu(
     .a(op1),
     .b(op2),
     .ALUCtrl(ALUCtrl),
     .result(ALU_result),
-    .zero_flag(zero)
+    .zero_flag(zero),
+    .overflow_flag(overflow)
 );
 
 wire [31:0] alu_result_final;

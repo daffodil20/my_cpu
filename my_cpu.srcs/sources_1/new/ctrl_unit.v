@@ -858,17 +858,19 @@ always @(posedge clk) begin
                end
                6'b000100: begin
                    ALUCtrl = 4'b0110; //左移
-                   ALUSrcBCtrl = 2'b10;
+                   ALUSrcBCtrl = 2'b00;  //第2个运算数是rs
                end    
                6'b000010,
                6'b000110: begin
                    ALUCtrl = 4'b0111; //逻辑右移
+                   ALUSrcBCtrl = 2'b10; //第2个运算数是shamt
                end
                6'b000011,
                6'b000111: begin
                    ALUCtrl = 4'b1000; //算术右移
+                   ALUSrcBCtrl = 2'b10; //第2个运算数是shamt
                end
-               default: ALUCtrl = 4'b0000; 
+               default: ALUCtrl = 4'b1111; 
            endcase
            //ALUWrite = 0; //ALUOut锁存并输出
            ALUWrite = 1; //ALUOut提前锁存并输出
@@ -903,8 +905,8 @@ always @(posedge clk) begin
                6'b001101: ALUCtrl = 4'b0011; //ori
                6'b001110: ALUCtrl = 4'b0100; //xori
                
-               6'b001010,
-               6'b001011: ALUCtrl = 4'b0001; //slti,sltiu
+               6'b001010: ALUCtrl = 4'b1001; //slti
+               6'b001011: ALUCtrl = 4'b1010; //sltiu
                default: ALUCtrl = 4'b0000; 
            endcase
            ALUWrite = 1; //ALUOut临时存储结果
