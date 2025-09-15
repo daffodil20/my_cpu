@@ -27,6 +27,18 @@ module _7seg_display(
     output reg [7:0] seg, // 段选（abcdefg）
     output reg [2:0] sel   // 位选（哪一位亮）
 );
+    
+    
+     // ========================
+    // 1. 锁存 ALU 输出，防止显示乱跳
+    // ========================
+    reg [15:0] stable_result;
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            stable_result <= 16'd0;
+        else
+            stable_result <= result;  // 每个时钟周期更新一次
+    end
 
  // 分频，让数码管扫描频率在1kHz左右
     reg [15:0] div_cnt = 0;
@@ -36,7 +48,8 @@ module _7seg_display(
             div_cnt <= 0;
             scan_clk <= 0;
         end else begin
-            if (div_cnt == 50_000-1) begin  // 50MHz时钟 -> 1kHz (改成你的实际板载时钟)
+            if (div_cnt == 10-1) begin
+            //if (div_cnt == 50_000-1) begin  // 50MHz时钟 -> 1kHz (改成你的实际板载时钟)
                 div_cnt <= 0;
                 scan_clk <= ~scan_clk;
             end else begin
@@ -56,11 +69,17 @@ module _7seg_display(
     reg [3:0] hex_digit;
     always @(*) begin
         case (digit_sel)
-            2'b00: hex_digit = result[3:0];
+            /*2'b00: hex_digit = result[3:0];
             2'b01: hex_digit = result[7:4];
             2'b10: hex_digit = result[11:8];
             2'b11: hex_digit = result[15:12];
-            default: hex_digit = result[3:0];
+            default: hex_digit = result[3:0];*/
+            
+            2'b00: hex_digit = stable_result[3:0];
+            2'b01: hex_digit = stable_result[7:4];
+            2'b10: hex_digit = stable_result[11:8];
+            2'b11: hex_digit = stable_result[15:12];
+            default: hex_digit = stable_result[3:0];
             
             /*2'b000: bin_digit = result[0];
             2'b001: bin_digit = result[1];
@@ -81,7 +100,7 @@ module _7seg_display(
             4'd0: seg = 8'b1111_1100;
             4'd1: seg = 8'b0000_1100;
             4'd2: seg = 8'b1101_1010;
-            4'd3: seg = 8'b1111_0100;
+            4'd3: seg = 8'b1111_0010;
             4'd4: seg = 8'b0110_0110;
             4'd5: seg = 8'b1011_0110;
             4'd6: seg = 8'b1011_1110;
@@ -117,11 +136,17 @@ module _7seg_display(
             2'b10: sel = 3'b101;
             2'b11: sel = 3'b100;*/
             
-            2'b00: sel = 3'b100;
+            /*2'b00: sel = 3'b100;
             2'b01: sel = 3'b101;
             2'b10: sel = 3'b110;
             2'b11: sel = 3'b111;
-            default: sel = 3'b100;
+            2'b00: sel = 3'b100;*/
+            2'b00: sel = 3'b111;
+            2'b01: sel = 3'b110;
+            2'b10: sel = 3'b101;
+            2'b11: sel = 3'b100;
+            default: sel = 3'b111;
+            //default: sel = 3'b100;
         endcase
     end
 endmodule

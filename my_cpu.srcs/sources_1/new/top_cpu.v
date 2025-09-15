@@ -86,12 +86,14 @@ cpu cpu(
     .rst(rst),
     .pc_out(pc_out),
     .ALU_result(alu_val) //输出alu_val，送入seg7
+    //.ALUOut(ALUOut)
 );
 
 // 实例化数码管驱动
 _7seg_display seg7(
     .clk(clk),
     .rst(rst),
+    //.result(ALUOut[15:0]),  // 先显示低 16 位
     .result(alu_val[15:0]),  // 先显示低 16 位
     .seg(seg),              // 七段管段选
     .sel(sel)                 // 七段管位选

@@ -1,6 +1,6 @@
 webtalk_init -webtalk_dir C:/verilog_simulation/my_cpu/my_cpu.sim/sim_1/behav/xsim/xsim.dir/tb_top_cpu_behav/webtalk/
 webtalk_register_client -client project
-webtalk_add_data -client project -key date_generated -value "Sun Sep 14 19:12:22 2025" -context "software_version_and_target_device"
+webtalk_add_data -client project -key date_generated -value "Mon Sep 15 16:05:31 2025" -context "software_version_and_target_device"
 webtalk_add_data -client project -key product_version -value "XSIM v2018.3 (64-bit)" -context "software_version_and_target_device"
 webtalk_add_data -client project -key build_version -value "2405991" -context "software_version_and_target_device"
 webtalk_add_data -client project -key os_platform -value "WIN64" -context "software_version_and_target_device"
@@ -14,7 +14,7 @@ webtalk_add_data -client project -key target_package -value "not_applicable" -co
 webtalk_add_data -client project -key target_speed -value "not_applicable" -context "software_version_and_target_device"
 webtalk_add_data -client project -key random_id -value "63d9c4d7-9a06-406f-b6c7-2b8bb8fa73c7" -context "software_version_and_target_device"
 webtalk_add_data -client project -key project_id -value "2c7965db74654db6a8418d9403cb59c5" -context "software_version_and_target_device"
-webtalk_add_data -client project -key project_iteration -value "59" -context "software_version_and_target_device"
+webtalk_add_data -client project -key project_iteration -value "63" -context "software_version_and_target_device"
 webtalk_add_data -client project -key os_name -value "Microsoft Windows 8 or later , 64-bit" -context "user_environment"
 webtalk_add_data -client project -key os_release -value "major release  (build 9200)" -context "user_environment"
 webtalk_add_data -client project -key cpu_name -value "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz" -context "user_environment"
@@ -36,7 +36,7 @@ webtalk_add_data -client xsim -key Total_Nets -value "0" -context "xsim\\usage"
 webtalk_add_data -client xsim -key Total_Processes -value "103" -context "xsim\\usage"
 webtalk_add_data -client xsim -key Total_Instances -value "21" -context "xsim\\usage"
 webtalk_add_data -client xsim -key Xilinx_HDL_Libraries_Used -value "secureip unimacro_ver unisims_ver " -context "xsim\\usage"
-webtalk_add_data -client xsim -key Compiler_Time -value "0.76_sec" -context "xsim\\usage"
-webtalk_add_data -client xsim -key Compiler_Memory -value "51288_KB" -context "xsim\\usage"
-webtalk_transmit -clientid 2033550154 -regid "" -xml C:/verilog_simulation/my_cpu/my_cpu.sim/sim_1/behav/xsim/xsim.dir/tb_top_cpu_behav/webtalk/usage_statistics_ext_xsim.xml -html C:/verilog_simulation/my_cpu/my_cpu.sim/sim_1/behav/xsim/xsim.dir/tb_top_cpu_behav/webtalk/usage_statistics_ext_xsim.html -wdm C:/verilog_simulation/my_cpu/my_cpu.sim/sim_1/behav/xsim/xsim.dir/tb_top_cpu_behav/webtalk/usage_statistics_ext_xsim.wdm -intro "<H3>XSIM Usage Report</H3><BR>"
+webtalk_add_data -client xsim -key Compiler_Time -value "0.90_sec" -context "xsim\\usage"
+webtalk_add_data -client xsim -key Compiler_Memory -value "51188_KB" -context "xsim\\usage"
+webtalk_transmit -clientid 2163726185 -regid "" -xml C:/verilog_simulation/my_cpu/my_cpu.sim/sim_1/behav/xsim/xsim.dir/tb_top_cpu_behav/webtalk/usage_statistics_ext_xsim.xml -html C:/verilog_simulation/my_cpu/my_cpu.sim/sim_1/behav/xsim/xsim.dir/tb_top_cpu_behav/webtalk/usage_statistics_ext_xsim.html -wdm C:/verilog_simulation/my_cpu/my_cpu.sim/sim_1/behav/xsim/xsim.dir/tb_top_cpu_behav/webtalk/usage_statistics_ext_xsim.wdm -intro "<H3>XSIM Usage Report</H3><BR>"
 webtalk_terminate
