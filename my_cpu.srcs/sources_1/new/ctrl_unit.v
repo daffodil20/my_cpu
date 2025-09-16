@@ -547,8 +547,9 @@ always @(*) begin
                 6'b001000, //adii,addiu
                 6'b001001,
                 6'b001100,
-                6'b001101,
-                6'b001111,
+                6'b001101, //ori
+                6'b001110, //xori
+                6'b001111, //lui
                 6'b001010,
                 6'b001011: 
                     next_state = S6_EX_I_ALU;
@@ -891,7 +892,9 @@ always @(posedge clk) begin
             Mem2Reg = 0; //写入数据来自ALU
             ALUWrite = 1;  //ALUOut锁存*/
             ALUWrite = 1;  //ALUOut锁存
-            RegWrite = 1; //写寄存器使能         
+            RegWrite = 1; //写寄存器使能   
+            //ALUWrite = 0;  //ALUOut锁存
+            //RegWrite = 0; //写寄存器使能         
             RegDst = 2'b00; //写回到rd
             Mem2Reg = 2'b00; //写入数据来自ALU
          end
@@ -1040,8 +1043,10 @@ always @(posedge clk) begin
          end
          
          S17_WB_R2: begin //R型指令写回第二个时钟周期
-             ALUWrite = 1; 
-             RegWrite = 1; //写寄存器使能         
+             //ALUWrite = 1; 
+             //RegWrite = 1; //写寄存器使能
+             ALUWrite = 0; 
+             RegWrite = 0; //写寄存器不使能                  
              RegDst = 2'b00; //写回到rd
              Mem2Reg = 2'b00; //写入数据来自ALU
          end
